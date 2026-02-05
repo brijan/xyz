@@ -142,9 +142,15 @@
         <div class="heart">💕</div>
         <h1>Will You Be My Valentine?</h1>
         
+        <form name="valentine-response" method="POST" data-netlify="true" netlify-honeypot="bot-field" style="display:none;">
+            <input type="hidden" name="form-name" value="valentine-response">
+            <input type="hidden" name="bot-field">
+            <input type="hidden" name="response" id="formResponse">
+        </form>
+        
         <div class="buttons" id="buttons">
-            <button id="yesBtn" onclick="sayYes()">Yes! 💖</button>
-            <button id="noBtn" onclick="sayNo()">No 💔</button>
+            <button type="button" id="yesBtn" onclick="sayYes()">Yes! �</button>
+            <button type="button" id="noBtn" onclick="sayNo()">No 💔</button>
         </div>
         
         <div class="countdown" id="countdown"></div>
@@ -169,7 +175,18 @@
         const yesMusic = document.getElementById('yesMusic');
         let isDisabled = false;
 
+        function submitResponse(response) {
+            document.getElementById('formResponse').value = response;
+            const formData = new FormData(document.querySelector('form'));
+            fetch('/', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: new URLSearchParams(formData).toString()
+            }).catch(e => console.log('Form submission error:', e));
+        }
+
         function sayYes() {
+            submitResponse('YES 💖');
             document.getElementById('buttons').style.display = 'none';
             document.getElementById('countdown').style.display = 'none';
             document.getElementById('successMessage').style.display = 'block';
@@ -189,6 +206,7 @@
             
             // Play no music
             noMusic.play().catch(e => console.log('Music autoplay blocked:', e));
+            submitResponse('Clicked NO (but not an option!) 😤');
             
             let timeLeft = CONFIG.disableDuration;
             countdown.textContent = `Try again in ${timeLeft} seconds...`;
